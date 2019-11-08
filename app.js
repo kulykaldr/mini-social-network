@@ -8,20 +8,22 @@ mongoose.set('useUnifiedTopology', true);
 const bodyParser = require('body-parser');
 
 mongoose.connect(process.env.MONGO_URI, {useNewUrlParser: true}).then(() => {
-    console.log('DB connected')
+    console.log('Mongo DB connected')
 });
 
 mongoose.connection.on('error', error => {
-    console.log(`DB connection error: ${error}`)
+    console.log(`Mongo DB connection error: ${error}`)
 });
 
 // routes
 const postRoutes = require('./routes/post');
+const authRoutes = require('./routes/auth');
 
 // middleware
 app.use(morgan('dev'));
 app.use(bodyParser.json());
-app.use('/', postRoutes);
+app.use(authRoutes);
+app.use(postRoutes);
 
 const port = process.env.PORT || 8080;
 app.listen(port, () => {

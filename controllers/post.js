@@ -1,15 +1,15 @@
 const Post = require('../models/post');
 
 exports.getPosts = (req, res) => {
-    res.json({
-        posts: [
-            { title: 'First post' },
-            { title: 'Second post' }
-        ]
-    });
+    Post.find()
+        .select('_id title body')
+        .then(posts => {
+            res.json({ posts })
+        })
+        .catch(error => console.log(error))
 };
 
-exports.createPost = (req, res) => {
+exports.createPost = async (req, res) => {
     const post = new Post(req.body);
     post.save((error, result) => {
         if (error) {
