@@ -9,7 +9,7 @@ exports.postValidationRules = () => {
     ]
 };
 
-exports.authValidationRules = () => {
+exports.signupValidationRules = () => {
     return [
         check('name').not().isEmpty().withMessage('The name must not be empty')
             .isLength({ min: 3, max: 50 }).withMessage('Name must be between 3 to 50 characters'),

@@ -44,6 +44,9 @@ userSchema.methods = {
         } catch (error) {
             return ''
         }
+    },
+    isPasswordCorrect: function(password) {
+        return this.encryptPassword(password) === this.hashed_password;
     }
 };
 

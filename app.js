@@ -6,6 +6,7 @@ dotenv.config();
 const mongoose = require('mongoose');
 mongoose.set('useUnifiedTopology', true);
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 
 mongoose.connect(process.env.MONGO_URI, {useNewUrlParser: true}).then(() => {
     console.log('Mongo DB connected')
@@ -21,6 +22,7 @@ const authRoutes = require('./routes/auth');
 
 // middleware
 app.use(morgan('dev'));
+app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(authRoutes);
 app.use(postRoutes);
