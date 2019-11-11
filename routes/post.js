@@ -3,11 +3,12 @@ const { getPosts, createPost } = require('../controllers/post');
 const { requireSignin } = require('../controllers/auth');
 const router = express.Router();
 const { postValidationRules, validator } = require('../helpers/validators');
-import { userById } from "../controllers/user";
+const { userById } = require('../controllers/user');
 
-router.get('/posts', requireSignin, getPosts);
-router.post('/posts', postValidationRules(), validator, createPost);
+router.get('/posts', getPosts);
+router.post('/posts', requireSignin, postValidationRules(), validator, createPost);
 
+// any route containing :userId app will first execute userById()
 router.param('userId', userById);
 
 module.exports = router;

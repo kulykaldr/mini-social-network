@@ -8,6 +8,7 @@ router.post('/signup', signupValidationRules(), validator, signup);
 router.post('/signin', signin);
 router.get('/signout', signout);
 
+// any route containing :userId app will first execute userById()
 router.param('userId', userById);
 
 module.exports = router;
