@@ -53,7 +53,7 @@ exports.updateUser = (req, res) => {
         user.hashed_password = undefined;
         user.salt = undefined;
 
-        return res.json({ user })
+        return res.json(user)
     });
 };
 

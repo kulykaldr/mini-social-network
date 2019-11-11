@@ -38,7 +38,7 @@ exports.signin = (req, res) => {
             })
         }
         // generate token with user id adn jwt secret
-        const token = jwt.sign({ foo: 'bar' }, process.env.JWT_SECRET);
+        const token = jwt.sign({ _id: user.id }, process.env.JWT_SECRET);
 
         // set cookie with jwt token - will expire in 60 min
         res.cookie('t', token, { maxAge: 1000 * 60 * 60 });

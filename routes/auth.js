@@ -4,9 +4,9 @@ const { userById } = require('../controllers/user');
 const router = express.Router();
 const { signupValidationRules, validator } = require('../helpers/validators');
 
-router.post('/signup', signupValidationRules(), validator, signup);
-router.post('/signin', signin);
-router.get('/signout', signout);
+router.post('/auth/signup', signupValidationRules(), validator, signup);
+router.post('/auth/signin', signin);
+router.get('/auth/signout', signout);
 
 // any route containing :userId app will first execute userById()
 router.param('userId', userById);
