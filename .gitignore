@@ -1,3 +1,30 @@
-/node_modules
+# general
 /.idea
-.env
+
+# node-api
+node-api/node_modules
+node-api/.env
+
+# react-front
+
+# dependencies
+react-front/node_modules
+react-front/.pnp
+react-front/.pnp.js
+
+# testing
+react-front/coverage
+
+# production
+react-front/build
+
+# misc
+react-front/.DS_Store
+react-front/.env.local
+react-front/.env.development.local
+react-front/.env.test.local
+react-front/.env.production.local
+
+react-front/npm-debug.log*
+react-front/yarn-debug.log*
+react-front/yarn-error.log*
