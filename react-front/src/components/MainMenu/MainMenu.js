@@ -1,28 +1,31 @@
 import React from 'react';
-
 import { compose } from "redux";
 import { connect } from "react-redux";
+import { Link, NavLink } from "react-router-dom";
 import { signoutUser } from "../../redux/authReducer";
-import { NavLink } from "react-router-dom";
 
-const MainMenu = ({ signoutUser }) => (
-    <nav>
-        <div>
-            <button onClick={() => signoutUser()} className="btn btn-primary">Signout</button>
-        </div>
-        <div>
-            <NavLink to='/signin'>Signin</NavLink>
-        </div>
-        <div>
-            <NavLink to='/signup'>Signup</NavLink>
-        </div>
-    </nav>
-);
+const MainMenu = ({ isAuth, signoutUser }) => {
+    return (
+        <nav>
+            <ul className='nav nav-tabs bg-primary'>
+                {!isAuth && <li className='nav-item'>
+                    <NavLink to='/signup' className='nav-link' activeClassName='active'>Signup</NavLink>
+                </li>}
+                {!isAuth && <li className='nav-item'>
+                    <NavLink to='/signin' className='nav-link' activeClassName='active'>Signin</NavLink>
+                </li>}
+                {isAuth && <li className='nav-item'>
+                    <Link to={undefined} className='nav-link' onClick={signoutUser}>Signout</Link>
+                </li>}
+            </ul>
+        </nav>
+    )
+};
 
 const mapStateToProps = state => ({
     isAuth: state.auth.isAuth
 });
 
 export default compose(
-    connect(mapStateToProps, { signoutUser })
+    connect(mapStateToProps, {signoutUser})
 )(MainMenu);

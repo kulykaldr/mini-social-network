@@ -10,7 +10,7 @@ const SET_AUTH_DATA = 'SET_AUTH_DATA';
 const SET_IS_SIGNUP = 'SET_IS_SIGNUP';
 const SET_IS_LOADING = 'SET_IS_LOADING';
 
-const initialState = {
+const initialState  = {
     jwt: null,
     user: null,
     isAuth: false,
@@ -42,11 +42,11 @@ export const authReducer = (state = initialState, action) => {
     }
 };
 
-const setAuthData = (token, user, isAuth = false) => ({ type: SET_AUTH_DATA, token, user, isAuth });
+const setAuthData = (token, user, isAuth) => ({ type: SET_AUTH_DATA, token, user, isAuth });
 const setIsSignup = (isSignup) => ({ type: SET_IS_SIGNUP, isSignup });
 const setIsLoading = (isLoading) => ({ type: SET_IS_LOADING, isLoading });
 
-export const signupUser = ({ name, email, password }) => async dispatch => {
+export const signupUser = (name, email, password) => async dispatch => {
     dispatch(setIsLoading(true));
     try {
         const response = await instance.post('/auth/signup', { name, email, password });
@@ -54,6 +54,10 @@ export const signupUser = ({ name, email, password }) => async dispatch => {
         if (response.status === 200) {
             dispatch(setIsSignup(true));
             dispatch(setIsLoading(false));
+
+            if (typeof window !== undefined) {
+                localStorage.setItem('isSignup', 'true');
+            }
         }
     } catch (e) {
         dispatch(setIsLoading(false));
@@ -68,15 +72,13 @@ export const signinUser = ({ email, password }) => async dispatch => {
         const response = await instance.post('/auth/signin', { email, password });
 
         if (response.status === 200) {
-
             const { token, user } = response.data;
+            dispatch(setAuthData(token, user, true));
+            dispatch(setIsLoading(false));
 
             if (typeof window !== undefined) {
-                dispatch(setAuthData(token, user, true));
-                dispatch(setIsSignup(false));
                 localStorage.setItem('jwt', token);
                 localStorage.setItem('user', JSON.stringify(user));
-                dispatch(setIsLoading(false));
             }
         }
     } catch (e) {
@@ -91,16 +93,28 @@ export const signoutUser = () => async dispatch => {
         const response = await instance.get('/auth/signout');
 
         if (response.status === 200) {
-            if (typeof window !== undefined) {
-                dispatch(setAuthData(null, null, false));
-                dispatch(setIsSignup(false));
-                localStorage.clear();
+            dispatch(setAuthData(null, null, false));
+            dispatch(setIsLoading(false));
+            dispatch(setIsSignup(false));
 
-                dispatch(setIsLoading(false));
+            if (typeof window !== undefined) {
+                localStorage.removeItem('jwt');
+                localStorage.removeItem('user');
             }
         }
     } catch (e) {
         dispatch(setIsLoading(false));
         throw new SubmissionError( e.response.data.errors[0]);
+    }
+};
+
+export const getLocalStorageAuthData = () => dispatch => {
+    if (typeof window !== undefined) {
+        const token = localStorage.getItem('jwt');
+        const user = localStorage.getItem('user');
+
+        const isSignupAuth = !!token;
+        dispatch(setAuthData(token, JSON.parse(user), isSignupAuth));
+        dispatch(setIsSignup(isSignupAuth));
     }
 };

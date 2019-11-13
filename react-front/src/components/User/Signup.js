@@ -12,10 +12,14 @@ const Signup = ({ signupUser, isSignup, isAuth, isLoading }) => {
 
     if (isSignup || isAuth) return <Redirect to='/signin'/>;
 
+    const onSubmit = ({ name, email, password }) => {
+        signupUser(name, email, password);
+    };
+
     return <div className='container'>
         <h2 className='mt-5 mb-5'>Signup</h2>
         {isLoading && <Preloader/>}
-        {!isLoading && <SignupFormRedux onSubmit={signupUser}/>}
+        {!isLoading && <SignupFormRedux onSubmit={onSubmit}/>}
     </div>
 };
 
