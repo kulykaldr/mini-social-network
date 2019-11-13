@@ -6,8 +6,10 @@ const expressJwt = require('express-jwt');
 exports.signup = async (req, res) => {
     const userExists = await User.findOne({ email: req.body.email });
     if (userExists) {
-        return res.status(403).json({
-            error: 'Email is already use in system'
+        return res.status(401).json({
+            errors: [{
+                email: 'Email is already use in system'
+            }]
         })
     }
 
@@ -27,14 +29,19 @@ exports.signin = (req, res) => {
         // if error or no user send error
         if (err || !user) {
             return res.status(401).json({
-                error: 'User with this email does not exist'
+                errors: [{
+                    email: 'User with this email does not exist'
+                }]
             })
         }
 
         // if password from user correct - then auth user
         if (!user.isPasswordCorrect(password)) {
             return res.status(401).json({
-                error: 'Email and password don\'t match'
+                errors: [{
+                    email: 'Email and password don\'t match',
+                    password: 'Email and password don\'t match'
+                }]
             })
         }
         // generate token with user id adn jwt secret
