@@ -1,17 +1,22 @@
 import React from 'react';
-import {Route, Switch} from 'react-router-dom'
+import { Route, Switch } from 'react-router-dom'
 import Home from "../Home/Home";
 import Signup from "../User/Signup";
 import Signin from "../User/Signin";
-import { signoutUser } from "../../redux/authReducer";
+import Profile from "../Profile/Profile";
+import Users from "../User/Users";
+import ProfileEdit from "../User/ProfileEdit";
+import PrivateRoute from "./PrivateRoute";
 
 const MainRouter = () => (
     <div>
         <Switch>
-            <Route path='/signup' component={Signup}/>
-            <Route path='/signin' component={Signin}/>
-            <Route path='/signuot' render={() => signoutUser()}/>
-            <Route path='/' component={Home}/>
+            <Route exact path='/' component={Home}/>
+            <Route exact path='/users' component={Users}/>
+            <Route exact path='/signup' component={Signup}/>
+            <Route exact path='/signin' component={Signin}/>
+            <Route exact path='/user/:userId' component={Profile}/>
+            <PrivateRoute exact path='/user/edit/:userId' component={ProfileEdit}/>
         </Switch>
     </div>
 );

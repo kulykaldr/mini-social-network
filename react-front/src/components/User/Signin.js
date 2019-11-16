@@ -6,16 +6,14 @@ import { email, required } from "../../helpers/formValidators";
 import renderField from "../../helpers/renderField";
 import { compose } from "redux";
 import { Redirect } from "react-router-dom";
-import Preloader from "../common/Preloader/Preloader";
 
-const Signin = ({ signinUser, isAuth, isLoading }) => {
+const Signin = ({ signinUser, isAuth }) => {
 
     if (isAuth) return <Redirect to='/'/>;
 
     return <div className='container'>
         <h2 className='mt-5 mb-5'>Signin</h2>
-        {isLoading && <Preloader/>}
-        {!isLoading && <SigninFormRedux onSubmit={signinUser}/>}
+        <SigninFormRedux onSubmit={signinUser}/>
     </div>
 };
 
@@ -39,8 +37,7 @@ const SigninForm = ({ handleSubmit, submitting }) => {
 const SigninFormRedux = reduxForm({ form: 'SigninForm' })(SigninForm);
 
 const mapStateToProps = state => ({
-    isAuth: state.auth.isAuth,
-    isLoading: state.auth.isLoading
+    isAuth: state.auth.isAuth
 });
 
 export default compose(

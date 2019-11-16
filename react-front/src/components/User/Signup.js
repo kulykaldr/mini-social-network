@@ -1,25 +1,31 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { Field, reduxForm } from 'redux-form';
 import { connect } from 'react-redux';
 import { signupUser } from '../../redux/authReducer';
 import { email, required } from "../../helpers/formValidators";
 import renderField from "../../helpers/renderField";
 import { compose } from "redux";
-import { Redirect } from "react-router-dom";
-import Preloader from "../common/Preloader/Preloader";
+import { NavLink, Redirect } from "react-router-dom";
 
-const Signup = ({ signupUser, isSignup, isAuth, isLoading }) => {
+const Signup = ({ signupUser, isAuth }) => {
 
-    if (isSignup || isAuth) return <Redirect to='/signin'/>;
+    const [isSignup, setIsSignup] = useState(false);
+
+    if (isAuth) return <Redirect to='/' />;
 
     const onSubmit = ({ name, email, password }) => {
         signupUser(name, email, password);
+        setIsSignup(true);
     };
 
     return <div className='container'>
         <h2 className='mt-5 mb-5'>Signup</h2>
-        {isLoading && <Preloader/>}
-        {!isLoading && <SignupFormRedux onSubmit={onSubmit}/>}
+
+        {isSignup && <div className='alert alert-success'>
+            New account is successfully created. Please <NavLink to={'/signin'}>Sign In</NavLink>
+        </div>}
+
+        <SignupFormRedux onSubmit={onSubmit} />
     </div>
 };
 
@@ -45,7 +51,6 @@ const SignupForm = ({ handleSubmit, submitting }) => {
 const SignupFormRedux = reduxForm({ form: 'signupForm' })(SignupForm);
 
 const mapStateToProps = state => ({
-    isSignup: state.auth.isSignup,
     isAuth: state.auth.isAuth,
     isLoading: state.auth.isLoading
 });

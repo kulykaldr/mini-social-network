@@ -51,9 +51,9 @@ exports.signin = (req, res) => {
         res.cookie('t', token, { maxAge: 1000 * 60 * 60 });
 
         // send response to user with user data (id, email, name) and token
-        const { _id, name, email } = user;
+        const { _id, name, email, created } = user;
 
-        return res.json({ token, user: { _id, name, email } })
+        return res.json({ token, user: { _id, name, email, created } })
     });
 };
 

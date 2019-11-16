@@ -30,7 +30,7 @@ exports.allUsers = (req, res) => {
             })
         }
 
-        return res.json({ users })
+        return res.json(users);
     }).select('name email created updated')
 };
 
@@ -59,15 +59,12 @@ exports.updateUser = (req, res) => {
 
 exports.deleteUser = (req, res) => {
     let user = req.profile;
-    user.remove((err, user) => {
+    user.remove(err => {
         if (err) {
             return res.status(400).json({
                 error: err
             })
         }
-
-        user.hashed_password = undefined;
-        user.salt = undefined;
 
         return res.status(410).json({
             message: 'Delete user success'

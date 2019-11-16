@@ -2,19 +2,16 @@ import * as axios from "axios";
 import { SubmissionError } from "redux-form";
 
 const instance = axios.create({
-    // withCredentials: true,
     baseURL: 'http://localhost:8080'
 });
 
-const SET_AUTH_DATA = 'SET_AUTH_DATA';
-const SET_IS_SIGNUP = 'SET_IS_SIGNUP';
-const SET_IS_LOADING = 'SET_IS_LOADING';
+const SET_AUTH_DATA = 'AUTH/SET_AUTH_DATA';
+const SET_IS_LOADING = 'AUTH/SET_IS_LOADING';
 
-const initialState  = {
+const initialState = {
     jwt: null,
-    user: null,
+    authProfile: null,
     isAuth: false,
-    isSignup: false,
     isLoading: false
 };
 
@@ -24,13 +21,8 @@ export const authReducer = (state = initialState, action) => {
             return ({
                 ...state,
                 jwt: action.token,
-                user: action.user,
+                authProfile: action.authProfile,
                 isAuth: action.isAuth
-            });
-        case SET_IS_SIGNUP:
-            return ({
-                ...state,
-                isSignup: action.isSignup
             });
         case SET_IS_LOADING:
             return ({
@@ -42,8 +34,7 @@ export const authReducer = (state = initialState, action) => {
     }
 };
 
-const setAuthData = (token, user, isAuth) => ({ type: SET_AUTH_DATA, token, user, isAuth });
-const setIsSignup = (isSignup) => ({ type: SET_IS_SIGNUP, isSignup });
+const setAuthData = (token, authProfile, isAuth) => ({ type: SET_AUTH_DATA, token, authProfile, isAuth });
 const setIsLoading = (isLoading) => ({ type: SET_IS_LOADING, isLoading });
 
 export const signupUser = (name, email, password) => async dispatch => {
@@ -52,16 +43,11 @@ export const signupUser = (name, email, password) => async dispatch => {
         const response = await instance.post('/auth/signup', { name, email, password });
 
         if (response.status === 200) {
-            dispatch(setIsSignup(true));
             dispatch(setIsLoading(false));
-
-            if (typeof window !== undefined) {
-                localStorage.setItem('isSignup', 'true');
-            }
         }
-    } catch (e) {
+    } catch(e) {
         dispatch(setIsLoading(false));
-        throw new SubmissionError( e.response.data.errors[0]);
+        throw new SubmissionError(e.response.data.errors[0]);
     }
 
 };
@@ -78,12 +64,12 @@ export const signinUser = ({ email, password }) => async dispatch => {
 
             if (typeof window !== undefined) {
                 localStorage.setItem('jwt', token);
-                localStorage.setItem('user', JSON.stringify(user));
+                localStorage.setItem('authProfile', JSON.stringify(user));
             }
         }
-    } catch (e) {
+    } catch(e) {
         dispatch(setIsLoading(false));
-        throw new SubmissionError( e.response.data.errors[0]);
+        throw new SubmissionError(e.response.data.errors[0]);
     }
 };
 
@@ -95,26 +81,24 @@ export const signoutUser = () => async dispatch => {
         if (response.status === 200) {
             dispatch(setAuthData(null, null, false));
             dispatch(setIsLoading(false));
-            dispatch(setIsSignup(false));
 
             if (typeof window !== undefined) {
                 localStorage.removeItem('jwt');
-                localStorage.removeItem('user');
+                localStorage.removeItem('authProfile');
             }
         }
-    } catch (e) {
+    } catch(e) {
         dispatch(setIsLoading(false));
-        throw new SubmissionError( e.response.data.errors[0]);
+        throw new SubmissionError(e.response.data.error);
     }
 };
 
 export const getLocalStorageAuthData = () => dispatch => {
     if (typeof window !== undefined) {
         const token = localStorage.getItem('jwt');
-        const user = localStorage.getItem('user');
+        const authProfile = localStorage.getItem('authProfile');
 
-        const isSignupAuth = !!token;
-        dispatch(setAuthData(token, JSON.parse(user), isSignupAuth));
-        dispatch(setIsSignup(isSignupAuth));
+        const isAuth = !!token;
+        dispatch(setAuthData(token, JSON.parse(authProfile), isAuth));
     }
 };

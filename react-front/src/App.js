@@ -10,7 +10,7 @@ const App = ({ initializeApp, initialized }) => {
 
     useEffect(() => {
         initializeApp();
-    }, [initialized]);
+    }, [initialized, initializeApp]);
 
     if (!initialized) return <Preloader />;
 
