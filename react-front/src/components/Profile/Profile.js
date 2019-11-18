@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, memo } from 'react';
 import { compose } from "redux";
 import { connect } from "react-redux";
 import { deleteUser, getUser } from "../../redux/userReducer";
@@ -6,7 +6,7 @@ import Preloader from "../common/Preloader/Preloader";
 import { Link, withRouter } from "react-router-dom";
 import anonimPhoto from '../../images/anonim.jpg';
 
-const Profile = ({ getUser, user, isLoading, match, authProfile, deleteUser, history, error }) => {
+const Profile = memo(({ getUser, user, isLoading, match, authProfile, deleteUser, history, error }) => {
 
     const userId = match.params.userId;
 
@@ -53,10 +53,10 @@ const Profile = ({ getUser, user, isLoading, match, authProfile, deleteUser, his
             <div className="row">
                 <div className="col-md-6">
 
-                    <img className="card-img-top"
-                         src={anonimPhoto}
+                    <img className='img-thumbnail'
+                         style={{ height: '200px', width: 'auto' }}
+                         src={user.photo || anonimPhoto}
                          alt={user.name}
-                         style={{ width: '100%', height: '15vw', objectFit: 'cover' }}
                     />
                 </div>
 
@@ -65,8 +65,7 @@ const Profile = ({ getUser, user, isLoading, match, authProfile, deleteUser, his
                     <div className="lead mt-2">
                         <p>Hello {user.name}</p>
                         <p>Email: {user.email}</p>
-                        <p>Created: {createdDate}
-                        </p>
+                        <p>Created: {createdDate}</p>
                     </div>
 
                     {user._id === authProfile._id && (
@@ -81,13 +80,19 @@ const Profile = ({ getUser, user, isLoading, match, authProfile, deleteUser, his
                             </button>
                         </div>
                     )}
-
                 </div>
+            </div>
 
+            <div className="row">
+                <div className="col md-12 mt-5 mb-5">
+                    <hr/>
+                    <p className="lead">{user.about || '...'}</p>
+                    <hr/>
+                </div>
             </div>
         </div>
     );
-};
+});
 
 const mapStateToProps = state => ({
     authProfile: state.auth.authProfile,

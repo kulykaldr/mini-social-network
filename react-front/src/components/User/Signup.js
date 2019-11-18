@@ -3,7 +3,7 @@ import { Field, reduxForm } from 'redux-form';
 import { connect } from 'react-redux';
 import { signupUser } from '../../redux/authReducer';
 import { email, required } from "../../helpers/formValidators";
-import renderField from "../../helpers/renderField";
+import InputField from "../../helpers/InputField";
 import { compose } from "redux";
 import { NavLink, Redirect } from "react-router-dom";
 
@@ -34,11 +34,11 @@ const SignupForm = ({ handleSubmit, submitting }) => {
         <div>
             <form onSubmit={handleSubmit}>
 
-                <Field name='name' type='text' label='Name' component={renderField}
+                <Field name='name' type='text' label='Name' component={InputField}
                        validate={[ required ]}/>
-                <Field name='email' type='email' label='Email' component={renderField}
+                <Field name='email' type='email' label='Email' component={InputField}
                        validate={[ required, email ]}/>
-                <Field name='password' type='password' label='Password' component={renderField}
+                <Field name='password' type='password' label='Password' component={InputField}
                        validate={[ required ]}/>
 
                 <button className='btn btn-raised btn-primary' disabled={submitting}>Submit</button>

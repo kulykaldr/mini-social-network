@@ -76,9 +76,9 @@ export const signinUser = ({ email, password }) => async dispatch => {
 export const signoutUser = () => async dispatch => {
     dispatch(setIsLoading(true));
     try {
-        const response = await instance.get('/auth/signout');
+        const { status } = await instance.get('/auth/signout');
 
-        if (response.status === 200) {
+        if (status === 200) {
             dispatch(setAuthData(null, null, false));
             dispatch(setIsLoading(false));
 

@@ -1,7 +1,6 @@
 import React from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import Home from "../Home/Home";
 import { Redirect, Route } from "react-router-dom";
 
 const PrivateRoute = ({ component, isAuth, ...rest }) => (
