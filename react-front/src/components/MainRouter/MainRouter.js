@@ -1,11 +1,11 @@
 import React from 'react';
 import { Route, Switch } from 'react-router-dom'
 import Home from "../Home/Home";
-import Signup from "../User/Signup";
-import Signin from "../User/Signin";
+import Signup from "../Auth/Signup";
+import Signin from "../Auth/Signin";
 import Profile from "../Profile/Profile";
-import Users from "../User/Users";
-import ProfileEdit from "../User/ProfileEdit";
+import Users from "../Users/Users";
+import ProfileEdit from "../Profile/ProfileEdit";
 import PrivateRoute from "./PrivateRoute";
 
 const MainRouter = () => (

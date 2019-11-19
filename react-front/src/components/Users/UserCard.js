@@ -4,10 +4,10 @@ import anonimPhoto from '../../images/anonim.jpg';
 
 const UserCard = ({ user }) => (
     <div className="card col-md-4" style={{width: '18rem'}}>
-        <img className='img-thumbnail'
-             style={{ height: '200px', width: 'auto' }}
+        <img className="card-img-top"
              src={user.photo || anonimPhoto}
              alt={user.name}
+             style={{width: '100%', height: '15vw', objectFit: 'cover'}}
         />
             <div className="card-body">
                 <h5 className="card-title">{user.name}</h5>

@@ -3,7 +3,8 @@ import { getLocalStorageAuthData } from "./authReducer";
 const INITIALIZED_SUCCESS = 'INITIALIZED_SUCCESS';
 
 const initialState = {
-    initialized: false
+    initialized: false,
+    serverUrl: 'http://localhost:8080'
 };
 
 export const appReducer = (state = initialState, action) => {

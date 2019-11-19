@@ -9,21 +9,23 @@ const instance = axios.create({
     }
 });
 
-const SET_USER_DATA = 'USER/SET_USER_DATA';
+const SET_PROFILE = 'USER/SET_PROFILE';
 const SET_USERS = 'USER/SET_USERS';
 const SET_IS_LOADING = 'USER/SET_IS_LOADING';
 const SET_ERROR = 'USER/SET_ERROR';
+const SET_IS_FOLLOWING = 'USER/SET_IS_FOLLOWING';
 
 const initialState = {
     profile: {},
     users: [],
     isLoading: true,
-    error: ''
+    error: '',
+    isFollowing: false
 };
 
 export const userReducer = (state = initialState, action) => {
     switch (action.type) {
-        case SET_USER_DATA:
+        case SET_PROFILE:
             return ({
                 ...state,
                 profile: action.profile
@@ -43,31 +45,66 @@ export const userReducer = (state = initialState, action) => {
                 ...state,
                 users: action.users
             });
+        case SET_IS_FOLLOWING:
+            return ({
+                ...state,
+                isFollowing: action.isFollowing
+            });
         default:
             return state;
     }
 };
 
-const setUserData = (profile) => ({ type: SET_USER_DATA, profile });
+const setProfile = (profile) => ({ type: SET_PROFILE, profile });
 const setUsers = (users) => ({ type: SET_USERS, users });
 const setIsLoading = (isLoading) => ({ type: SET_IS_LOADING, isLoading });
 const setError = (error) => ({ type: SET_ERROR, error });
+const setIsFollowing = isFollowing => ({ type: SET_IS_FOLLOWING, isFollowing });
 
 const photoDataToImgUrl = photoData => {
     const base64Flag = `data:${photoData.contentType};base64,`;
     return base64Flag + new Buffer(photoData.data.data, 'binary').toString('base64');
 };
 
+const mapEncodingToImgUrl = arr => {
+    return arr.map(item => {
+        if (item.photo) {
+            item.photo = photoDataToImgUrl(item.photo);
+        }
+
+        return item
+    })
+};
+
+const userPhotoEncoding = user => {
+    if (user.photo) {
+        user.photo = photoDataToImgUrl(user.photo);
+    }
+
+    if (user.following) {
+        user.following = mapEncodingToImgUrl(user.following);
+    }
+
+    if (user.followers) {
+        user.followers = mapEncodingToImgUrl(user.followers);
+    }
+
+    return user;
+};
+
 export const getUser = userId => async dispatch => {
     dispatch(setIsLoading(true));
     try {
         const { data, status } = await instance.get(`/users/${userId}`);
-        if (data.photo) {
-            data.photo = photoDataToImgUrl(data.photo);
-        }
 
         if (status === 200) {
-            dispatch(setUserData(data));
+            const user = userPhotoEncoding(data);
+
+            // set isFollow to current user
+            const isFollow = checkFollow(user.followers);
+            dispatch(setIsFollowing(isFollow));
+
+            dispatch(setProfile(user));
             dispatch(setIsLoading(false));
         }
     } catch(e) {
@@ -97,15 +134,9 @@ export const getUsers = () => async dispatch => {
     try {
         const { data, status } = await instance.get('/users');
 
-        const users = data.map(user => {
-            if (user.photo) {
-                user.photo = photoDataToImgUrl(user.photo);
-            }
-            return user;
-        });
-
-
         if (status === 200) {
+            const users = data.map(user => userPhotoEncoding(user));
+
             dispatch(setUsers(users));
             dispatch(setIsLoading(false));
         }
@@ -123,7 +154,7 @@ export const updateUser = ({ userId, ...body }) => async dispatch => {
         const { data, status } = await instance.put(`/users/${userId}`, formData);
 
         if (status === 200) {
-            dispatch(setUserData(data));
+            dispatch(setProfile(data));
             dispatch(setIsLoading(false));
         }
     } catch(e) {
@@ -140,4 +171,38 @@ const createFormData = (body) => {
     });
 
     return data;
+};
+
+const checkFollow = followers => {
+    const authProfile = JSON.parse(localStorage.getItem('authProfile'));
+    return followers.some(follower => follower._id === authProfile._id);
+};
+
+export const followUser = (userId, followId) => async dispatch => {
+    try {
+        const { data, status } = await instance.put('/users/follow', { userId, followId });
+
+        if (status === 200) {
+            // set isFollow to current user
+            const isFollow = checkFollow(data.followers);
+            dispatch(setIsFollowing(isFollow));
+        }
+    } catch(e) {
+        dispatch(setError(e.response.data.error));
+    }
+};
+
+export const unfollowUser = (userId, unfollowId) => async dispatch => {
+    try {
+        const { data, status } = await instance.put('/users/unfollow', { userId, unfollowId });
+
+        if (status === 200) {
+            // set isFollow to current user
+            const isFollow = checkFollow(data.followers);
+            dispatch(setIsFollowing(isFollow));
+
+        }
+    } catch(e) {
+        dispatch(setError(e.response.data.error));
+    }
 };

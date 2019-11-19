@@ -1,12 +1,16 @@
 import React, { useEffect, memo } from 'react';
 import { compose } from "redux";
 import { connect } from "react-redux";
-import { deleteUser, getUser } from "../../redux/userReducer";
+import { deleteUser, followUser, getUser, unfollowUser } from "../../redux/userReducer";
 import Preloader from "../common/Preloader/Preloader";
 import { Link, withRouter } from "react-router-dom";
 import anonimPhoto from '../../images/anonim.jpg';
+import ProfileTabs from "./ProfileTabs";
 
-const Profile = memo(({ getUser, user, isLoading, match, authProfile, deleteUser, history, error }) => {
+const Profile = memo(({
+                          getUser, user, isLoading, match, authProfile,
+                          deleteUser, history, error, isAuth, followUser, unfollowUser, isFollowing
+                      }) => {
 
     const userId = match.params.userId;
 
@@ -40,6 +44,14 @@ const Profile = memo(({ getUser, user, isLoading, match, authProfile, deleteUser
         }
     };
 
+    const onClickFollow = () => {
+        followUser(authProfile._id, user._id);
+    };
+
+    const onClickUnfollow = () => {
+        unfollowUser(authProfile._id, user._id);
+    };
+
     const createdDate = new Date(user.created)
         .toLocaleDateString('en-US',
             {
@@ -68,8 +80,8 @@ const Profile = memo(({ getUser, user, isLoading, match, authProfile, deleteUser
                         <p>Created: {createdDate}</p>
                     </div>
 
-                    {user._id === authProfile._id && (
-                        <div className='d-inline-block'>
+                    {isAuth && user._id === authProfile._id
+                        ? <div className='d-inline-block'>
                             <Link
                                 to={`/user/edit/${userId}`}
                                 className='btn btn-raised btn-success mr-5'>
@@ -79,7 +91,15 @@ const Profile = memo(({ getUser, user, isLoading, match, authProfile, deleteUser
                                 Delete profile
                             </button>
                         </div>
-                    )}
+                        : <div className='d-inline-block'>
+                            {isFollowing
+                                ? <button className='btn btn-warning btn-raised'
+                                                onClick={onClickUnfollow}>Unfollow</button>
+                                : <button className='btn btn-success btn-raised mr-5'
+                                          onClick={onClickFollow}>Follow</button>
+                            }
+                        </div>
+                    }
                 </div>
             </div>
 
@@ -88,6 +108,8 @@ const Profile = memo(({ getUser, user, isLoading, match, authProfile, deleteUser
                     <hr/>
                     <p className="lead">{user.about || '...'}</p>
                     <hr/>
+
+                    <ProfileTabs following={user.following} followers={user.followers}/>
                 </div>
             </div>
         </div>
@@ -98,10 +120,12 @@ const mapStateToProps = state => ({
     authProfile: state.auth.authProfile,
     user: state.user.profile,
     isLoading: state.user.isLoading,
-    error: state.user.error
+    error: state.user.error,
+    isAuth: state.auth.isAuth,
+    isFollowing: state.user.isFollowing
 });
 
 export default compose(
-    connect(mapStateToProps, { getUser, deleteUser }),
+    connect(mapStateToProps, { getUser, deleteUser, followUser, unfollowUser }),
     withRouter
 )(Profile);
