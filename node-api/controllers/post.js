@@ -20,9 +20,10 @@ exports.postById = (req, res, next, id) => {
 exports.getPosts = (req, res) => {
     Post.find()
         .populate('postedBy', '_id name')
-        .select('_id title body')
+        .select('_id title body thumbnail created')
+        .sort({created: -1})
         .then(posts => {
-            res.json({ posts })
+            res.json(posts)
         })
         .catch(error => console.log(error))
 };
@@ -43,9 +44,9 @@ exports.createPost = (req, res) => {
         req.profile.salt = undefined;
         post.postedBy = req.profile;
 
-        if (files.photo) {
-            post.photo.data = fs.readFileSync(files.photo.path);
-            post.photo.contentType = files.photo.type;
+        if (files.thumbnail) {
+            post.thumbnail.data = fs.readFileSync(files.thumbnail.path);
+            post.thumbnail.contentType = files.thumbnail.type;
         }
 
         post.save((err, result) => {
@@ -101,15 +102,38 @@ exports.deletePost = (req, res) => {
 };
 
 exports.updatePost = (req, res) => {
-    const post = Object.assign(req.post, req.body);
-    post.updated = Date.now();
-    post.save((err, post) => {
+    let form = new formidable.IncomingForm();
+    form.keepExtensions = true;
+    form.parse(req, (err, fields, files) => {
         if (err) {
             return res.status(400).json({
                 error: err
             })
         }
 
-        return res.json(post);
-    })
+        let post = req.post;
+        post = Object.assign(post, fields);
+        post.updated = Date.now();
+
+        if (files.thumbnail) {
+            post.thumbnail.data = fs.readFileSync(files.thumbnail.path);
+            post.thumbnail.contentType = files.thumbnail.type;
+        }
+
+        post.save((err, post) => {
+            if (err) {
+                return res.status(400).json({
+                    error: err
+                })
+            }
+
+            res.json(post);
+        })
+    });
+
+
+};
+
+exports.singlePost = (req, res) => {
+    return res.json(req.post);
 };

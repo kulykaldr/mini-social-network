@@ -27,10 +27,13 @@ const MainMenu = ({ isAuth, signoutUser, authProfile, history }) => {
                     <NavLink exact to='/signin' className='nav-link' activeClassName='active'>Signin</NavLink>
                 </li>}
                 {isAuth && <li className='nav-item'>
-                    <Link to='#' className='nav-link' onClick={onClickSignout}>Signout</Link>
+                    <NavLink to='/post/create' className='nav-link'>Create post</NavLink>
                 </li>}
                 {isAuth && <li className='nav-item'>
                     <NavLink to={`/user/${authProfile._id}`} className='nav-link' style={{color: 'rgb(255,254,155)'}}>{`Profile: ${authProfile.name}`}</NavLink>
+                </li>}
+                {isAuth && <li className='nav-item'>
+                    <Link to='#' className='nav-link' onClick={onClickSignout}>Signout</Link>
                 </li>}
             </ul>
         </nav>

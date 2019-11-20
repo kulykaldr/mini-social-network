@@ -14,7 +14,7 @@ const postSchema = new mongoose.Schema({
         minLength: 4,
         maxLength: 2000
     },
-    photo: {
+    thumbnail: {
         data: Buffer,
         contentType: String
     },
@@ -25,7 +25,8 @@ const postSchema = new mongoose.Schema({
     created: {
         type: Date,
         default: Date.now
-    }
+    },
+    updated: Date
 
 });
 

@@ -1,10 +1,13 @@
 import React from 'react';
 import { compose } from "redux";
 import { connect } from "react-redux";
+import Posts from "../Posts/Posts";
 
 const Home = () => (
     <div className='container'>
-        <h2 className='mt-5 mb-5'>Home</h2>
+        <h2 className='mt-5 mb-5'>Main page</h2>
+        Welcome to main page
+        <Posts />
     </div>
 );
 

@@ -6,10 +6,12 @@ import Preloader from "../common/Preloader/Preloader";
 import { Link, withRouter } from "react-router-dom";
 import anonimPhoto from '../../images/anonim.jpg';
 import ProfileTabs from "./ProfileTabs";
+import { getUserPosts } from "../../redux/postReducer";
 
 const Profile = memo(({
                           getUser, user, isLoading, match, authProfile,
-                          deleteUser, history, error, isAuth, followUser, unfollowUser, isFollowing
+                          deleteUser, history, error, isAuth, followUser,
+                          unfollowUser, isFollowing, getUserPosts, posts
                       }) => {
 
     const userId = match.params.userId;
@@ -17,6 +19,10 @@ const Profile = memo(({
     useEffect(() => {
         getUser(userId);
     }, [ userId, getUser ]);
+
+    useEffect(() => {
+        getUserPosts(userId);
+    }, [ userId, getUserPosts ]);
 
     if (isLoading) {
         return (
@@ -63,7 +69,7 @@ const Profile = memo(({
         <div className='container'>
             <h2 className='mt-5 mb-5'>Profile</h2>
             <div className="row">
-                <div className="col-md-6">
+                <div className="col-md-4">
 
                     <img className='img-thumbnail'
                          style={{ height: '200px', width: 'auto' }}
@@ -72,7 +78,7 @@ const Profile = memo(({
                     />
                 </div>
 
-                <div className="col-md-6">
+                <div className="col-md-8">
 
                     <div className="lead mt-2">
                         <p>Hello {user.name}</p>
@@ -82,6 +88,11 @@ const Profile = memo(({
 
                     {isAuth && user._id === authProfile._id
                         ? <div className='d-inline-block'>
+                            <Link
+                                to='/post/create'
+                                className='btn btn-raised btn-info mr-5'>
+                                Create post
+                            </Link>
                             <Link
                                 to={`/user/edit/${userId}`}
                                 className='btn btn-raised btn-success mr-5'>
@@ -109,7 +120,7 @@ const Profile = memo(({
                     <p className="lead">{user.about || '...'}</p>
                     <hr/>
 
-                    <ProfileTabs following={user.following} followers={user.followers}/>
+                    <ProfileTabs following={user.following} followers={user.followers} posts={posts}/>
                 </div>
             </div>
         </div>
@@ -122,10 +133,11 @@ const mapStateToProps = state => ({
     isLoading: state.user.isLoading,
     error: state.user.error,
     isAuth: state.auth.isAuth,
-    isFollowing: state.user.isFollowing
+    isFollowing: state.user.isFollowing,
+    posts: state.post.posts
 });
 
 export default compose(
-    connect(mapStateToProps, { getUser, deleteUser, followUser, unfollowUser }),
+    connect(mapStateToProps, { getUser, deleteUser, followUser, unfollowUser, getUserPosts }),
     withRouter
 )(Profile);
