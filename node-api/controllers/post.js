@@ -20,7 +20,7 @@ exports.postById = (req, res, next, id) => {
 exports.getPosts = (req, res) => {
     Post.find()
         .populate('postedBy', '_id name')
-        .select('_id title body thumbnail created')
+        .select('_id title body thumbnail created likes')
         .sort({created: -1})
         .then(posts => {
             res.json(posts)
@@ -64,6 +64,7 @@ exports.createPost = (req, res) => {
 exports.postedByUser = (req, res) => {
     Post.find({ postedBy: req.profile._id })
         .populate('postedBy', '_id name')
+        .select('_id title body thumbnail created likes')
         .sort('created')
         .exec((err, posts) => {
             if (err) {
@@ -96,7 +97,7 @@ exports.deletePost = (req, res) => {
             })
         }
         return res.json({
-            message: 'Post successfully deleted'
+            message: 'SinglePost successfully deleted'
         })
     })
 };
@@ -136,4 +137,40 @@ exports.updatePost = (req, res) => {
 
 exports.singlePost = (req, res) => {
     return res.json(req.post);
+};
+
+exports.likePost = (req, res) => {
+    Post.findByIdAndUpdate(
+        req.body.postId,
+        { $push: { likes: req.body.userId } },
+        { new: true}
+    )
+        .populate('postedBy', '_id name')
+        .exec((err, result) => {
+        if (err) {
+            return res.status(400).json({
+                error: err
+            })
+        }
+
+        res.json(result);
+    })
+};
+
+exports.unlikePost = (req, res) => {
+    Post.findByIdAndUpdate(
+        req.body.postId,
+        { $pull: { likes: req.body.userId } },
+        { new: true}
+    )
+        .populate('postedBy', '_id name')
+        .exec((err, result) => {
+        if (err) {
+            return res.status(400).json({
+                error: err
+            })
+        }
+
+        res.json(result);
+    })
 };

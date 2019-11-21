@@ -20,20 +20,23 @@ const MainMenu = ({ isAuth, signoutUser, authProfile, history }) => {
                 <li className='nav-item'>
                     <NavLink exact to='/users' className='nav-link' activeClassName='active'>Users</NavLink>
                 </li>
-                {!isAuth && <li className='nav-item'>
-                    <NavLink exact to='/signup' className='nav-link' activeClassName='active'>Signup</NavLink>
-                </li>}
-                {!isAuth && <li className='nav-item'>
-                    <NavLink exact to='/signin' className='nav-link' activeClassName='active'>Signin</NavLink>
-                </li>}
                 {isAuth && <li className='nav-item'>
                     <NavLink to='/post/create' className='nav-link'>Create post</NavLink>
                 </li>}
                 {isAuth && <li className='nav-item'>
-                    <NavLink to={`/user/${authProfile._id}`} className='nav-link' style={{color: 'rgb(255,254,155)'}}>{`Profile: ${authProfile.name}`}</NavLink>
+                    <NavLink to={`/user/${authProfile._id}`}
+                             className='nav-link' style={{color: 'rgb(255,254,155)'}}>
+                        {`Profile: ${authProfile.name}`}
+                    </NavLink>
                 </li>}
                 {isAuth && <li className='nav-item'>
                     <Link to='#' className='nav-link' onClick={onClickSignout}>Signout</Link>
+                </li>}
+                {!isAuth && <li className='nav-item'>
+                    <NavLink exact to='/signin' className='nav-link' activeClassName='active'>Signin</NavLink>
+                </li>}
+                {!isAuth && <li className='nav-item'>
+                    <NavLink exact to='/signup' className='nav-link' activeClassName='active'>Signup</NavLink>
                 </li>}
             </ul>
         </nav>

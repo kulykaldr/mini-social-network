@@ -166,8 +166,46 @@ export const updatePost = (postId, body) => async dispatch => {
         const { data, status } = await instance.put(`/posts/${postId}`, formData);
 
         if (status === 200) {
+            if (data.thumbnail) {
+                data.thumbnail = photoDataToImgUrl(data.thumbnail);
+            }
+
             dispatch(setPost(data));
             dispatch(setIsLoading(false));
+        }
+    } catch(e) {
+        dispatch(setIsLoading(false));
+        dispatch(setError(e.response.data.error));
+    }
+};
+
+export const likePost = (userId, postId) => async dispatch => {
+    try {
+        const { data, status } = await instance.put('/posts/like', { userId, postId });
+
+        if (status === 200) {
+            if (data.thumbnail) {
+                data.thumbnail = photoDataToImgUrl(data.thumbnail);
+            }
+
+            dispatch(setPost(data));
+        }
+    } catch(e) {
+        dispatch(setIsLoading(false));
+        dispatch(setError(e.response.data.error));
+    }
+};
+
+export const unlikePost = (userId, postId) => async dispatch => {
+    try {
+        const { data, status } = await instance.put('/posts/unlike', { userId, postId });
+
+        if (status === 200) {
+            if (data.thumbnail) {
+                data.thumbnail = photoDataToImgUrl(data.thumbnail);
+            }
+
+            dispatch(setPost(data));
         }
     } catch(e) {
         dispatch(setIsLoading(false));
