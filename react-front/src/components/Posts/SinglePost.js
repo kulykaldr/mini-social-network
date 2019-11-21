@@ -11,7 +11,7 @@ const SinglePost = ({
                     }) => {
 
     const postId = match.params.postId;
-    const userId = authProfile._id;
+    const userId = authProfile && authProfile._id;
 
     const posterUrl = post.postedBy ? `/user/${post.postedBy._id}` : '#';
     const posterId = post.postedBy ? post.postedBy._id : undefined;
