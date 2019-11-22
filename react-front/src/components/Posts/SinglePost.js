@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { NavLink, withRouter } from 'react-router-dom';
 import { deletePost, getPosts, getSinglePost, likePost, unlikePost } from '../../redux/postReducer';
 import Preloader from '../common/Preloader/Preloader';
+import Comment from "./Comment";
 
 const SinglePost = ({
                         post, match, getSinglePost, isLoading, error,
@@ -93,6 +94,7 @@ const SinglePost = ({
                     }
                 </div>
             </div>
+            <Comment />
         </div>
     )
 };

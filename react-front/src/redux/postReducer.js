@@ -62,6 +62,10 @@ const mapEncodingToImgUrl = arr => {
             item.thumbnail = photoDataToImgUrl(item.thumbnail);
         }
 
+        if (item.postedBy.photo) {
+            item.postedBy.photo = photoDataToImgUrl(item.postedBy.photo);
+        }
+
         return item;
     })
 };
@@ -136,6 +140,10 @@ export const getSinglePost = postId => async dispatch => {
                 data.thumbnail = photoDataToImgUrl(data.thumbnail);
             }
 
+            if (data.comments) {
+                data.comments = mapEncodingToImgUrl(data.comments);
+            }
+
             dispatch(setPost(data));
             dispatch(setIsLoading(false));
         }
@@ -191,7 +199,6 @@ export const likePost = (userId, postId) => async dispatch => {
             dispatch(setPost(data));
         }
     } catch(e) {
-        dispatch(setIsLoading(false));
         dispatch(setError(e.response.data.error));
     }
 };
@@ -208,7 +215,46 @@ export const unlikePost = (userId, postId) => async dispatch => {
             dispatch(setPost(data));
         }
     } catch(e) {
-        dispatch(setIsLoading(false));
+        dispatch(setError(e.response.data.error));
+    }
+};
+
+export const commentPost = (postId, userId, text) => async dispatch => {
+    try {
+        const { data, status } = await instance.put('/posts/comment', { userId, postId, comment: { text } });
+
+        if (status === 200) {
+            if (data.thumbnail) {
+                data.thumbnail = photoDataToImgUrl(data.thumbnail);
+            }
+
+            if (data.comments) {
+                data.comments = mapEncodingToImgUrl(data.comments);
+            }
+
+            dispatch(setPost(data));
+        }
+    } catch(e) {
+        dispatch(setError(e.response.data.error));
+    }
+};
+
+export const uncommentPost = (postId, userId, comment) => async dispatch => {
+    try {
+        const { data, status } = await instance.put('/posts/uncomment', { userId, postId, comment });
+
+        if (status === 200) {
+            if (data.thumbnail) {
+                data.thumbnail = photoDataToImgUrl(data.thumbnail);
+            }
+
+            if (data.comments) {
+                data.comments = mapEncodingToImgUrl(data.comments);
+            }
+
+            dispatch(setPost(data));
+        }
+    } catch(e) {
         dispatch(setError(e.response.data.error));
     }
 };

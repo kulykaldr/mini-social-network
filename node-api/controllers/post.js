@@ -5,6 +5,7 @@ const fs = require('fs');
 exports.postById = (req, res, next, id) => {
     Post.findById(id)
         .populate('postedBy', '_id name')
+        .populate('comments.postedBy', '_id name photo')
         .exec((err, post) => {
             if (err || !post) {
                 return res.status(400).json({
@@ -20,6 +21,8 @@ exports.postById = (req, res, next, id) => {
 exports.getPosts = (req, res) => {
     Post.find()
         .populate('postedBy', '_id name')
+        .populate('comments', '_id text created')
+        .populate('comments.postedBy', '_id name')
         .select('_id title body thumbnail created likes')
         .sort({created: -1})
         .then(posts => {
@@ -64,6 +67,8 @@ exports.createPost = (req, res) => {
 exports.postedByUser = (req, res) => {
     Post.find({ postedBy: req.profile._id })
         .populate('postedBy', '_id name')
+        .populate('comments', '_id text created')
+        .populate('comments.postedBy', '_id name')
         .select('_id title body thumbnail created likes')
         .sort('created')
         .exec((err, posts) => {
@@ -173,4 +178,47 @@ exports.unlikePost = (req, res) => {
 
         res.json(result);
     })
+};
+
+exports.commentPost = (req, res) => {
+    let comment = req.body.comment;
+    comment.postedBy = req.body.userId;
+
+    Post.findByIdAndUpdate(
+        req.body.postId,
+        { $push: { comments: comment } },
+        { new: true}
+    )
+        .populate('comments.postedBy', '_id name photo')
+        .populate('postedBy', '_id name photo')
+        .exec((err, result) => {
+            if (err) {
+                return res.status(400).json({
+                    error: err
+                })
+            }
+
+            res.json(result);
+        })
+};
+
+exports.uncommentPost = (req, res) => {
+    let comment = req.body.comment;
+
+    Post.findByIdAndUpdate(
+        req.body.postId,
+        { $pull: { comments: { _id: comment._id } } },
+        { new: true}
+    )
+        .populate('comments.postedBy', '_id name photo')
+        .populate('postedBy', '_id name photo')
+        .exec((err, result) => {
+            if (err) {
+                return res.status(400).json({
+                    error: err
+                })
+            }
+
+            res.json(result);
+        })
 };
