@@ -151,6 +151,7 @@ exports.likePost = (req, res) => {
         { new: true}
     )
         .populate('postedBy', '_id name')
+        .populate('comments.postedBy', '_id name photo')
         .exec((err, result) => {
         if (err) {
             return res.status(400).json({
@@ -169,6 +170,7 @@ exports.unlikePost = (req, res) => {
         { new: true}
     )
         .populate('postedBy', '_id name')
+        .populate('comments.postedBy', '_id name photo')
         .exec((err, result) => {
         if (err) {
             return res.status(400).json({

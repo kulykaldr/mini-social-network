@@ -196,6 +196,10 @@ export const likePost = (userId, postId) => async dispatch => {
                 data.thumbnail = photoDataToImgUrl(data.thumbnail);
             }
 
+            if (data.comments) {
+                data.comments = mapEncodingToImgUrl(data.comments);
+            }
+
             dispatch(setPost(data));
         }
     } catch(e) {
@@ -210,6 +214,10 @@ export const unlikePost = (userId, postId) => async dispatch => {
         if (status === 200) {
             if (data.thumbnail) {
                 data.thumbnail = photoDataToImgUrl(data.thumbnail);
+            }
+
+            if (data.comments) {
+                data.comments = mapEncodingToImgUrl(data.comments);
             }
 
             dispatch(setPost(data));
