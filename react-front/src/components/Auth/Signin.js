@@ -5,7 +5,7 @@ import { signinUser } from '../../redux/authReducer';
 import { email, required } from "../../helpers/formValidators";
 import InputField from "../../helpers/InputField";
 import { compose } from "redux";
-import { Redirect } from "react-router-dom";
+import { NavLink, Redirect } from "react-router-dom";
 
 const Signin = ({ signinUser, isAuth }) => {
 
@@ -28,6 +28,9 @@ const SigninForm = ({ handleSubmit, submitting }) => {
                        validate={[ required ]}/>
 
                 <button className='btn btn-raised btn-primary' disabled={submitting}>Submit</button>
+                <div>
+                    <p>Forgot password? <NavLink to='/forgot-password'>Click here</NavLink></p>
+                </div>
             </form>
         </div>
     )

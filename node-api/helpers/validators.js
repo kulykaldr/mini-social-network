@@ -20,6 +20,19 @@ exports.signupValidationRules = () => {
     ]
 };
 
+exports.passwordResetValidationRules = () => {
+    // check for password
+    return [
+        check("newPassword", "Password is required").notEmpty(),
+        check("newPassword")
+            .isLength({ min: 6 })
+            .withMessage("Password must be at least 6 chars long")
+            .matches(/\d/)
+            .withMessage("must contain a number")
+            .withMessage("Password must contain a number")
+    ]
+};
+
 exports.validator = (req, res, next) => {
     const errors = validationResult(req);
     if (errors.isEmpty()) {

@@ -7,12 +7,16 @@ const instance = axios.create({
 
 const SET_AUTH_DATA = 'AUTH/SET_AUTH_DATA';
 const SET_IS_LOADING = 'AUTH/SET_IS_LOADING';
+const SET_MESSAGE = 'AUTH/SET_MESSAGE';
+const SET_ERROR = 'AUTH/SET_ERROR';
 
 const initialState = {
     jwt: null,
     authProfile: null,
     isAuth: false,
-    isLoading: false
+    isLoading: false,
+    message: '',
+    error: ''
 };
 
 export const authReducer = (state = initialState, action) => {
@@ -29,6 +33,18 @@ export const authReducer = (state = initialState, action) => {
                 ...state,
                 isLoading: action.isLoading
             });
+        case SET_MESSAGE:
+            return ({
+                ...state,
+                message: action.message,
+                error: ''
+            });
+        case SET_ERROR:
+            return ({
+                ...state,
+                error: action.error,
+                message: ''
+            });
         default:
             return state;
     }
@@ -36,6 +52,8 @@ export const authReducer = (state = initialState, action) => {
 
 const setAuthData = (token, authProfile, isAuth) => ({ type: SET_AUTH_DATA, token, authProfile, isAuth });
 const setIsLoading = (isLoading) => ({ type: SET_IS_LOADING, isLoading });
+const setMessage = message => ({ type: SET_MESSAGE, message });
+const setError = error => ({ type: SET_ERROR, error });
 
 export const signupUser = (name, email, password) => async dispatch => {
     dispatch(setIsLoading(true));
@@ -100,5 +118,50 @@ export const getLocalStorageAuthData = () => dispatch => {
 
         const isAuth = !!token;
         dispatch(setAuthData(token, JSON.parse(authProfile), isAuth));
+    }
+};
+
+export const forgotPassword = email => async dispatch => {
+    dispatch(setIsLoading(true));
+    try {
+        const { data: { message }, status } = await instance.put('/auth/forgot-password', { email });
+
+        if (status === 200) {
+            dispatch(setMessage(message));
+            dispatch(setIsLoading(false));
+        }
+    } catch(e) {
+        dispatch(setIsLoading(false));
+
+        const data = e.response.data;
+
+        if (data.errors) {
+            throw new SubmissionError(data.errors[0]);
+        } else {
+            dispatch(setError(data.error));
+        }
+    }
+};
+
+export const resetPassword = (resetPasswordLink, newPassword) => async dispatch => {
+    dispatch(setIsLoading(true));
+    try {
+        const { data: { message }, status } = await instance.put('/auth/reset-password',
+            { resetPasswordLink, newPassword });
+
+        if (status === 200) {
+            dispatch(setMessage(message));
+            dispatch(setIsLoading(false));
+        }
+    } catch(e) {
+        dispatch(setIsLoading(false));
+
+        const data = e.response.data;
+
+        if (data.errors) {
+            throw new SubmissionError(data.errors[0]);
+        } else {
+            dispatch(setError(data.error));
+        }
     }
 };
